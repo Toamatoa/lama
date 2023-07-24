@@ -1,5 +1,5 @@
 # @package _group_
-data_root_dir: /home/user/inpainting-lama/places_standard_dataset/
-out_root_dir: /home/user/inpainting-lama/experiments
-tb_dir: /home/user/inpainting-lama/tb_logs
-pretrained_models: /home/user/inpainting-lama/
+data_root_dir: /home/andre/Desktop/lama-new/dataTrain
+out_root_dir: /home/andre/Desktop/lama-new/experiments
+tb_dir: /home/andre/Desktop/lama-new/tb_logs
+pretrained_models: /home/andre/Desktop/lama-new/

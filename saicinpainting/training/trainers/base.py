@@ -132,16 +132,6 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
 
     def val_dataloader(self):
         res = [make_default_val_dataloader(**self.config.data.val)]
-
-        if self.config.data.visual_test is not None:
-            res = res + [make_default_val_dataloader(**self.config.data.visual_test)]
-        else:
-            res = res + res
-
-        extra_val = self.config.data.get('extra_val', ())
-        if extra_val:
-            res += [make_default_val_dataloader(**extra_val[k]) for k in self.extra_val_titles]
-
         return res
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):

@@ -10,8 +10,6 @@ import torch
 import torch.nn.functional as F
 import webdataset
 from omegaconf import open_dict, OmegaConf
-from skimage.feature import canny
-from skimage.transform import rescale, resize
 from torch.utils.data import Dataset, IterableDataset, DataLoader, DistributedSampler, ConcatDataset
 
 from saicinpainting.evaluation.data import InpaintingDataset as InpaintingEvaluationDataset, \
@@ -24,7 +22,7 @@ LOGGER = logging.getLogger(__name__)
 
 class InpaintingTrainDataset(Dataset):
     def __init__(self, indir, mask_generator, transform):
-        self.in_files = list(glob.glob(os.path.join(indir, '**', '*.jpg'), recursive=True))
+        self.in_files = list(glob.glob(os.path.join(indir, '**', '*[0-9].jpg'), recursive=True))
         self.mask_generator = mask_generator
         self.transform = transform
         self.iter_i = 0

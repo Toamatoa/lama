@@ -6,7 +6,7 @@ num_workers: 3
 
 train:
   indir: ${location.data_root_dir}/train
-  out_size: 256
+  out_size: 512
   mask_gen_kwargs:  # probabilities do not need to sum to 1, they are re-normalized in mask generator
     irregular_proba: 1
     irregular_kwargs:
@@ -34,7 +34,7 @@ train:
 
 val:
   indir: ${location.data_root_dir}/val
-  img_suffix: .png
+  img_suffix: .jpg
   dataloader_kwargs:
     batch_size: ${data.val_batch_size}
     shuffle: False
@@ -100,7 +100,7 @@ val:
 
 visual_test:
   indir: ${location.data_root_dir}/visual_test
-  img_suffix: .png
+  img_suffix: .jpg
   pad_out_to_modulo: 32
   dataloader_kwargs:
     batch_size: 1
