@@ -26,6 +26,7 @@ class InpaintingTrainDataset(Dataset):
         self.mask_generator = mask_generator
         self.transform = transform
         self.iter_i = 0
+        LOGGER.info(f'Found {len(self.in_files)} files')
 
     def __len__(self):
         return len(self.in_files)

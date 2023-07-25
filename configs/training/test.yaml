@@ -2,7 +2,7 @@ run_title: ''
 
 training_model:
   kind: default
-  visualize_each_iters: 10 #1000
+  visualize_each_iters: 1 #1000
   concat_mask: true
   store_discr_outputs_for_vis: true
 
@@ -46,13 +46,13 @@ generator:
     enable_lfu: false
 
 data:
-  batch_size: 10
+  batch_size: 2
   val_batch_size: 2
   num_workers: 3
 
   train:
     indir: ${location.data_root_dir}/train
-    out_size: 512
+    out_size: 256
     mask_gen_kwargs:  # probabilities do not need to sum to 1, they are re-normalized in mask generator
       irregular_proba: 1
       irregular_kwargs:
@@ -90,7 +90,7 @@ location:
   data_root_dir: /home/andre/Desktop/lama-new/dataTrain
   out_root_dir: /home/andre/Desktop/lama-new/experiments
   tb_dir: /home/andre/Desktop/lama-new/tb_logs
-  pretrained_models: /home/andre/Desktop/lama-new/
+  pretrained_models: /home/andre/Desktop/lama-new
 
 discriminator:
   kind: pix2pixhd_nlayer
@@ -128,10 +128,10 @@ trainer:
   kwargs:
     gpus: -1
     accelerator: ddp
-    max_epochs: 40
+    max_epochs: 2
     gradient_clip_val: 1
     log_gpu_memory: None  # set to min_max or all for debug
-    limit_train_batches: 0 #25000
+    limit_train_batches: 1 #25000
     val_check_interval: ${trainer.kwargs.limit_train_batches}
     # fast_dev_run: True  # uncomment for faster debug
     # track_grad_norm: 2  # uncomment to track L2 gradients norm

@@ -1,5 +1,6 @@
 import glob
 import os
+import logging
 
 import cv2
 import PIL.Image as Image
@@ -7,6 +8,8 @@ import numpy as np
 
 from torch.utils.data import Dataset
 import torch.nn.functional as F
+
+LOGGER = logging.getLogger(__name__)
 
 
 def load_image(fname, mode='RGB', return_orig=False):
@@ -62,6 +65,7 @@ class InpaintingDataset(Dataset):
         self.img_filenames = [fname.rsplit('_mask', 1)[0] + img_suffix for fname in self.mask_filenames]
         self.pad_out_to_modulo = pad_out_to_modulo
         self.scale_factor = scale_factor
+        LOGGER.info(f'Found {len(self.img_filenames)} files')
 
     def __len__(self):
         return len(self.mask_filenames)

@@ -67,8 +67,8 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
         self.generator = make_generator(config, **self.config.generator)
         self.use_ddp = use_ddp
 
-        if not get_has_ddp_rank():
-            LOGGER.info(f'Generator\n{self.generator}')
+        #if not get_has_ddp_rank():
+            #LOGGER.info(f'Generator\n{self.generator}')
 
         if not predict_only:
             self.save_hyperparameters(self.config)
@@ -78,8 +78,8 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             self.val_evaluator = make_evaluator(**self.config.evaluator)
             self.test_evaluator = make_evaluator(**self.config.evaluator)
 
-            if not get_has_ddp_rank():
-                LOGGER.info(f'Discriminator\n{self.discriminator}')
+            #if not get_has_ddp_rank():
+                #LOGGER.info(f'Discriminator\n{self.discriminator}')
 
             extra_val = self.config.data.get('extra_val', ())
             if extra_val:
@@ -138,7 +138,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
         self._is_training_step = True
         return self._do_step(batch, batch_idx, mode='train', optimizer_idx=optimizer_idx)
 
-    def validation_step(self, batch, batch_idx, dataloader_idx):
+    def validation_step(self, batch, batch_idx, dataloader_idx=0):
         extra_val_key = None
         if dataloader_idx == 0:
             mode = 'val'
@@ -168,7 +168,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
         return full_loss
 
     def validation_epoch_end(self, outputs):
-        outputs = [step_out for out_group in outputs for step_out in out_group]
+        #outputs = [step_out for out_group in outputs for step_out in out_group]
         averaged_logs = average_dicts(step_out['log_info'] for step_out in outputs)
         self.log_dict({k: v.mean() for k, v in averaged_logs.items()})
 
@@ -189,27 +189,17 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
         # standard visual test
         test_evaluator_states = [s['test_evaluator_state'] for s in outputs
                                  if 'test_evaluator_state' in s]
-        test_evaluator_res = self.test_evaluator.evaluation_end(states=test_evaluator_states)
-        test_evaluator_res_df = pd.DataFrame(test_evaluator_res).stack(1).unstack(0)
-        test_evaluator_res_df.dropna(axis=1, how='all', inplace=True)
-        LOGGER.info(f'Test metrics after epoch #{self.current_epoch}, '
+        if test_evaluator_states:
+            test_evaluator_res = self.test_evaluator.evaluation_end(states=test_evaluator_states)
+            test_evaluator_res_df = pd.DataFrame(test_evaluator_res).stack(1).unstack(0)
+            test_evaluator_res_df.dropna(axis=1, how='all', inplace=True)
+            LOGGER.info(f'Test metrics after epoch #{self.current_epoch}, '
                     f'total {self.global_step} iterations:\n{test_evaluator_res_df}')
 
-        for k, v in flatten_dict(test_evaluator_res).items():
-            self.log(f'test_{k}', v)
+            for k, v in flatten_dict(test_evaluator_res).items():
+                self.log(f'test_{k}', v)
 
-        # extra validations
-        if self.extra_evaluators:
-            for cur_eval_title, cur_evaluator in self.extra_evaluators.items():
-                cur_state_key = f'extra_val_{cur_eval_title}_evaluator_state'
-                cur_states = [s[cur_state_key] for s in outputs if cur_state_key in s]
-                cur_evaluator_res = cur_evaluator.evaluation_end(states=cur_states)
-                cur_evaluator_res_df = pd.DataFrame(cur_evaluator_res).stack(1).unstack(0)
-                cur_evaluator_res_df.dropna(axis=1, how='all', inplace=True)
-                LOGGER.info(f'Extra val {cur_eval_title} metrics after epoch #{self.current_epoch}, '
-                            f'total {self.global_step} iterations:\n{cur_evaluator_res_df}')
-                for k, v in flatten_dict(cur_evaluator_res).items():
-                    self.log(f'extra_val_{cur_eval_title}_{k}', v)
+        torch.cuda.empty_cache()
 
     def _do_step(self, batch, batch_idx, mode='train', optimizer_idx=None, extra_val_key=None):
         if optimizer_idx == 0:  # step for generator

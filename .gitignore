@@ -135,3 +135,9 @@ dmypy.json
 .vscode/
 ## vim
 *.sw?
+
+
+experiments/
+tb_logs/
+hub/
+big-lama/

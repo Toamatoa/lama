@@ -5,6 +5,8 @@ import os
 import sys
 import traceback
 
+import torch.cuda
+
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
@@ -25,7 +27,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 @handle_ddp_subprocess()
-@hydra.main(config_path='../configs/training', config_name='tiny_test.yaml')
+@hydra.main(config_path='../configs/training', config_name='tests.yaml')
 def main(config: OmegaConf):
     try:
         need_set_deterministic = handle_deterministic_config(config)
@@ -36,7 +38,7 @@ def main(config: OmegaConf):
 
         config.visualizer.outdir = os.path.join(os.getcwd(), config.visualizer.outdir)
         if not is_in_ddp_subprocess:
-            LOGGER.info(OmegaConf.to_yaml(config))
+            #LOGGER.info(OmegaConf.to_yaml(config))
             OmegaConf.save(config, os.path.join(os.getcwd(), 'config.yaml'))
 
         checkpoints_dir = os.path.join(os.getcwd(), 'models')
@@ -59,6 +61,10 @@ def main(config: OmegaConf):
             default_root_dir=os.getcwd(),
             **trainer_kwargs
         )
+
+        #torch.cuda.empty_cache()
+        #torch.cuda.set_per_process_memory_fraction(0.8)
+
         trainer.fit(training_model)
     except KeyboardInterrupt:
         LOGGER.warning('Interrupted by user')
