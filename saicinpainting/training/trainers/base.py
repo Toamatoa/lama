@@ -132,7 +132,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
 
     def val_dataloader(self):
         res = [make_default_val_dataloader(**self.config.data.val)]
-        return res
+        return res + res
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
         self._is_training_step = True
@@ -168,7 +168,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
         return full_loss
 
     def validation_epoch_end(self, outputs):
-        #outputs = [step_out for out_group in outputs for step_out in out_group]
+        outputs = [step_out for out_group in outputs for step_out in out_group]
         averaged_logs = average_dicts(step_out['log_info'] for step_out in outputs)
         self.log_dict({k: v.mean() for k, v in averaged_logs.items()})
 
@@ -199,9 +199,10 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             for k, v in flatten_dict(test_evaluator_res).items():
                 self.log(f'test_{k}', v)
 
-        torch.cuda.empty_cache()
+        #torch.cuda.empty_cache()
 
     def _do_step(self, batch, batch_idx, mode='train', optimizer_idx=None, extra_val_key=None):
+        #torch.cuda.empty_cache()
         if optimizer_idx == 0:  # step for generator
             set_requires_grad(self.generator, True)
             set_requires_grad(self.discriminator, False)

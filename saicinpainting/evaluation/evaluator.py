@@ -197,10 +197,10 @@ class InpaintingEvaluatorOnline(nn.Module):
 
         results = {}
         for score_name, score in self.scores.items():
-            LOGGER.info(f'Getting value of {score_name}')
+            #LOGGER.info(f'Getting value of {score_name}')
             cur_states = [s[score_name] for s in states] if states is not None else None
             total_results, group_results = score.get_value(groups=self.groups, states=cur_states)
-            LOGGER.info(f'Getting value of {score_name} done')
+            #LOGGER.info(f'Getting value of {score_name} done')
             results[(score_name, 'total')] = total_results
 
             for group_index, group_values in group_results.items():

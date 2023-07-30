@@ -2,7 +2,7 @@ run_title: ''
 
 training_model:
   kind: default
-  visualize_each_iters: 1 #1000
+  visualize_each_iters: 1000
   concat_mask: true
   store_discr_outputs_for_vis: true
 
@@ -52,7 +52,7 @@ data:
 
   train:
     indir: ${location.data_root_dir}/train
-    out_size: 256
+    out_size: 256 #512
     mask_gen_kwargs:  # probabilities do not need to sum to 1, they are re-normalized in mask generator
       irregular_proba: 1
       irregular_kwargs:
@@ -127,25 +127,24 @@ evaluator:
 trainer:
   kwargs:
     gpus: -1
-    accelerator: ddp
-    max_epochs: 2
+    #accelerator: ddp
+    max_epochs: 20
     gradient_clip_val: 1
     log_gpu_memory: None  # set to min_max or all for debug
-    limit_train_batches: 1 #25000
+    limit_train_batches: 20000
     val_check_interval: ${trainer.kwargs.limit_train_batches}
     # fast_dev_run: True  # uncomment for faster debug
     # track_grad_norm: 2  # uncomment to track L2 gradients norm
-    log_every_n_steps: 250
-    precision: 32
-  #  precision: 16
+    log_every_n_steps: 1000
+    precision: 32 #16
   #  amp_backend: native
   #  amp_level: O1
     # resume_from_checkpoint: path  # override via command line trainer.resume_from_checkpoint=path_to_checkpoint
     terminate_on_nan: False
-    # auto_scale_batch_size: True  # uncomment to find largest batch size
+    #auto_scale_batch_size: True  # uncomment to find largest batch size
     check_val_every_n_epoch: 1
     num_sanity_val_steps: 8
-  #  limit_val_batches: 1000000
+    limit_val_batches: 1000
     replace_sampler_ddp: False
 
   checkpoint_kwargs:

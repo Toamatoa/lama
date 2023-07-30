@@ -62,10 +62,11 @@ def main(config: OmegaConf):
             **trainer_kwargs
         )
 
-        #torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
         #torch.cuda.set_per_process_memory_fraction(0.8)
 
         trainer.fit(training_model)
+        #torch.jit.save(training_model.to_torchscript(), "model.pt")
     except KeyboardInterrupt:
         LOGGER.warning('Interrupted by user')
     except Exception as ex:
