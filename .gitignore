@@ -141,3 +141,5 @@ experiments/
 tb_logs/
 hub/
 big-lama/
+outputs/
+export/
